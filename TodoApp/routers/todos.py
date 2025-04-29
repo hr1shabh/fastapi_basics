@@ -3,8 +3,8 @@ from fastapi import Depends, HTTPException, Path, APIRouter
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from typing import Annotated
-from database import sessionLocal
-from models import Todos
+from ..database import sessionLocal
+from ..models import Todos
 from starlette import status
 from .auth import get_current_user
 

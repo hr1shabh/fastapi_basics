@@ -13,8 +13,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy.util import deprecated
 from starlette import status
 from jose import jwt, JWTError
-from database import sessionLocal
-from models import Users
+from ..database import sessionLocal
+from ..models import Users
 
 router = APIRouter(
     prefix='/auth',
