@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 from ..database import Base
@@ -6,6 +6,8 @@ from ..main import app
 from ..routers.todos import get_db, get_current_user
 from fastapi.testclient import TestClient
 from fastapi import status
+import pytest
+from ..models import Todos
 
 SQLALCHEMY_DATABASE_URL = 'sqlite:///./testdb.db'
 
@@ -35,9 +37,29 @@ app.dependency_overrides[get_current_user] = ovveride_get_current_user
 
 client = TestClient(app)
 
-def test_read_all_authenticated():
+@pytest.fixture
+def test_todo():
+    todo = Todos(title = 'Learn to code',
+                 description = 'need to learn everyday',
+                 priority = 5,
+                 complete = False,
+                 owner_id = 1)
+    db = TestingSessionLocal()
+    db.add(todo)
+    db.commit()
+    yield todo
+    with engine.connect() as connection:
+        connection.execute(text("DELETE from todos;"))
+        connection.commit()
+
+def test_read_all_authenticated(test_todo):
     response = client.get('/')
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == []
+    assert response.json() == [{'title' : 'Learn to code',
+                 'description' : 'need to learn everyday',
+                 'priority' : 5,
+                 'complete' : False,
+                 'owner_id' : 1,
+                  'id' : 1}]
 
 
