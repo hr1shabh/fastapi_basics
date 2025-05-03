@@ -5,7 +5,8 @@ from ..database import Base
 from fastapi.testclient import TestClient
 import pytest
 from ..main import app
-from ..models import Todos
+from ..models import Todos, Users
+from ..routers.auth import bcrypt_context
 
 
 
@@ -47,4 +48,20 @@ def test_todo():
     yield todo
     with engine.connect() as connection:
         connection.execute(text("DELETE from todos;"))
+        connection.commit()
+
+@pytest.fixture
+def test_user():
+    user = Users(username = 'hrishabh_test', role = 'admin',
+                 first_name = 'Hrishabh', last_name = 'Palsra',
+                 hashed_password = bcrypt_context.hash('Test123'),
+                 phone_number = '9999999999',
+                 email = 'hrishabh@gmail.com'
+                 )
+    db = TestingSessionLocal()
+    db.add(user)
+    db.commit()
+    yield user
+    with engine.connect() as connection:
+        connection.execute(text('DELETE from users;'))
         connection.commit()
