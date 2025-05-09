@@ -1,6 +1,7 @@
     // Add Todo JS
     const todoForm = document.getElementById('todoForm');
     if (todoForm) {
+    console.log("----------------")
         todoForm.addEventListener('submit', async function (event) {
             event.preventDefault();
 
@@ -14,9 +15,10 @@
                 priority: parseInt(data.priority),
                 complete: false
             };
+            console.log("I am here")
 
             try {
-                const response = await fetch('/todos/todo', {
+                const response = await fetch('/todos/todo/create_todo', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -27,6 +29,8 @@
 
                 if (response.ok) {
                     form.reset(); // Clear the form
+                        window.location.href = '/todos/todo-page';
+
                 } else {
                     // Handle error
                     const errorData = await response.json();
